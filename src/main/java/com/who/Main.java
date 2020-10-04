@@ -19,6 +19,5 @@ public class Main {
             txtByte[i] ^= keyByte[i%key.length()];
             System.out.println(new String(txtByte));
         }
-
     }
 }
