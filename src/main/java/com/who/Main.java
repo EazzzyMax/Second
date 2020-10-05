@@ -5,10 +5,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
-
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.sql.SQLOutput;
+import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class Main {
 
@@ -16,77 +19,107 @@ public class Main {
 
         try {
 
-            File in = new File(args[0]);  //вход
-            System.out.println("in:    " + in);
-            String key = args[1];
-            System.out.println("key:   " + key);
-            File out = new File(args[2]); //выход
-            System.out.println("out:   " + out);
+            File inName = new File(args[0]);  //вход
+            System.out.println("in:    " + inName);
+            String keyString = args[1];
+            System.out.println("key:   " + keyString);
+            File outName = new File(args[2]); //выход
+            System.out.println("out:   " + outName);
             System.out.println("");
 
 
+            if (!outName.exists()) //если выход не сделан то делаю
+                outName.createNewFile();
 
+            Scanner inScan = new Scanner(inName);
+            String inTxt = "";
 
-            if (!out.exists()) //если выход не сделан то делаю
-                out.createNewFile();
-
-            BufferedReader br = new BufferedReader(new FileReader(in)); //отсюда буду читать
-            PrintWriter outTxt = new PrintWriter(out); //тут буду писать
-
-            String line;
-            byte[] txtByte;
-            byte[] keyByte;
-
-            System.out.println(br.read());
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
-
-                txtByte = line.getBytes();
-                keyByte = key.getBytes();
-
-                for (int i = 0; i < line.length(); i++) {
-                    txtByte[i] ^= keyByte[i % key.length()];
-                    System.out.println(new String(txtByte));
-                    System.out.println(txtByte[i]);
-                    System.out.println(".");
-
-                }
-                System.out.println("___________");
-                outTxt.println(new String(txtByte));
-
-
+            while (inScan.hasNext()) { //весь текст в строчку
+                inTxt += inScan.nextLine();
+                if (inScan.hasNext()) inTxt += "\r\n";
             }
+
+            System.out.println(inTxt);
+
+
+            PrintWriter outTxt = new PrintWriter(outName); //тут буду писать
+
+            byte[] txtByte = inTxt.getBytes();
+            byte[] keyByte = keyString.getBytes();
+
+            for (int i = 0; i < txtByte.length; i++) {
+                txtByte[i] ^= keyByte[i % keyByte.length];
+                System.out.println(new String(txtByte));
+                System.out.println("___________");
+            }
+            outTxt.println(new String(txtByte));
             outTxt.close();
+
+
+            System.out.println("");
+            System.out.println("______________________________________________________");
+            System.out.println("");
 
 
         } catch (IOException e) {
             System.out.println("Error: " + e);
         }
 
+        if (args.length>3) {
+            try {
 
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
+                File inName = new File(args[2]);  //вход
+                System.out.println("in:    " + inName);
+                String keyString = args[1];
+                System.out.println("key:   " + keyString);
+                File outName = new File(args[3]); //выход
+                System.out.println("out:   " + outName);
+                System.out.println("");
+
+
+                if (!outName.exists()) //если выход не сделан то делаю
+                    outName.createNewFile();
+
+                Scanner inScan = new Scanner(inName);
+                String inTxt = "";
+
+                while (inScan.hasNext()) { //весь текст в строчку
+                    inTxt += inScan.nextLine();
+                    if (inScan.hasNext()) inTxt += "\r\n";
+                }
+
+                System.out.println(inTxt);
+
+
+                PrintWriter outTxt = new PrintWriter(outName); //тут буду писать
+
+                byte[] txtByte = inTxt.getBytes();
+                byte[] keyByte = keyString.getBytes();
+
+                for (int i = 0; i < txtByte.length; i++) {
+                    txtByte[i] ^= keyByte[i % keyByte.length];
+                    System.out.println(new String(txtByte));
+                    System.out.println("___________");
+                }
+                outTxt.println(new String(txtByte));
+                outTxt.close();
+
+
+                System.out.println("");
+                System.out.println("______________________________________________________");
+                System.out.println("");
+
+
+            } catch (IOException e) {
+                System.out.println("Error: " + e);
+            }
+        }
+
+
+        System.out.println();
+        System.out.println();
+        System.out.println();
         System.out.println("!!!!!!!!!!!!");
-//        if (false) {
-//            String txt = args[0];
-//            String key = args[1];
-//
-//            byte[] txtByte = txt.getBytes();
-//            byte[] keyByte = key.getBytes();
-//
-//            for (int i = 0; i < txt.length(); i++) {
-//                txtByte[i] ^= keyByte[i % key.length()];
-//                System.out.println(new String(txtByte));
-//            }
-//            System.out.println("__________");
-//
-//            for (int i = 0; i < txt.length(); i++) {
-//                txtByte[i] ^= keyByte[i % key.length()];
-//                System.out.println(new String(txtByte));
-//            }
-//
-//        } else System.out.println("пососи");
 
         System.out.println("end");
     }
