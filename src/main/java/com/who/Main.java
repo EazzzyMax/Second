@@ -51,35 +51,52 @@ public class Main {
                     outName.createNewFile();
 
 
-                PrintWriter outTxt = new PrintWriter(outName); //тут буду писать
-
-                byte[] txtByte = Files.readAllBytes(Paths.get(inName));   //в байт. виде текст
-
                 //создание ключа
                 String keyString = args[1];
-                byte[] keyByte = new byte[keyString.length() / 2]; //в байт. виде ключ
-                for (int i = 0; i < keyString.length() / 2; i++){
+                int[] keyByte = new int[keyString.length() / 2]; //в байт. виде ключ
+                for (int i = 0; i < keyString.length() / 2; i++) {
                     keyByte[i] = (byte) Integer.parseInt(keyString.substring(i * 2, i * 2 + 2), 16);
-                }//создание ключа end
-
-
-
-                System.out.println("Key:  " + Arrays.toString(keyByte));
-                System.out.println();
-                System.out.println(new String(txtByte));
-
-                for (int i = 0; i < txtByte.length; i++) {  //старт кодирования
-
-                    txtByte[i] ^= keyByte[i % keyByte.length];
-
-
-
                 }
 
 
-                outTxt.println(new String(txtByte));
-                outTxt.close();
-                System.out.println("Новый файл находится в " + outName);
+                System.out.println("Key:  " + keyString + " " + Arrays.toString(keyByte));
+
+
+                byte[] txtByte = Files.readAllBytes(Paths.get(inName));   //в байт. виде текст
+                byte[] txtByteOut = new byte[txtByte.length];
+
+                for (int i = 0; i < txtByte.length; i++) {  //старт кодирования
+                    txtByteOut[i] = (byte) (txtByte[i] ^ keyByte[i % keyByte.length]);
+                }
+
+
+
+                PrintWriter outTxt = new PrintWriter(outName); //тут запишу.
+                outTxt.println(new String(txtByteOut));           //записал.
+                outTxt.close();                                //закрыл.
+                System.out.println("Новый файл находится по следующему адресу: " + outName);
+
+                //следующая проблемма решена, но пока код не доведен до совершенства, отладочный код остается
+
+                //при расшифровке зашифрованного файла (при условии что в ключе есть значения больше чем 7f(16) = 127(10)
+                //файл создается в utf-16. Как можно принудительно его записывать в utf-8?
+                //
+                //если производить шифроку и СРАЗУ дешифровку (без записи в файл), то все проходит успешно
+
+
+
+                //дешифровка без записи в файл
+                byte[] txtByteOutDecoded = new byte[txtByteOut.length];
+                for (int i = 0; i < txtByte.length; i++) {  //старт ДЕкодирования
+                    txtByteOutDecoded[i] = (byte) (txtByteOut[i] ^ keyByte[i % keyByte.length]);
+                }
+
+                String outNameDecoded = "C:\\o\\outAutoDecoded.txt";
+                PrintWriter outTxtDecoded = new PrintWriter(outNameDecoded);        //тут запишу.
+                outTxtDecoded.println(new String(txtByteOutDecoded));               //записал.
+                outTxtDecoded.close();                                              //закрыл.
+                System.out.println("АутоДекодед файл находится по следующему адресу: " + outNameDecoded);
+
 
             }
 
@@ -92,18 +109,10 @@ public class Main {
 
 
 
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println("end");
 
 
     }
 }
-
-
-
-
 
 
 
